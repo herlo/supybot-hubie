@@ -29,6 +29,7 @@
 ###
 
 import supybot.utils as utils
+import supybot.ircmsgs as ircmsgs
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
@@ -43,8 +44,16 @@ import cgi
 
 
 class PostPage(Resource):
+
+    def __init__(self, irc):
+        self.irc = irc
+
+    def render_GET(self, request):
+        return '<html><body><form method="POST"><input name="data" type="text" /></form></body></html>'
+        #return '<html><body>GET action not allowed</body></html>'
+
     def render_POST(self, request):
-        self.parse_post(cgi.escape(request.args["the-field"][0]))
+        self.parse_post(cgi.escape(request.args["data"][0]))
         return "Thanks!"
 
     def parse_post(self, input):
@@ -62,6 +71,9 @@ class PostPage(Resource):
         '<{4}>'.format(data['action'].upper(), data['repository']['full_name'], 
         data['issue']['number'], data['issue']['title'],  data['issue']['html_url'])
     
+        for channel in self.irc.state.channels:
+            self.irc.queueMsg(ircmsgs.privmsg(channel, issue_str))
+
         print issue_str
 
 
@@ -79,13 +91,24 @@ class Hubie(callbacks.Plugin):
 
         callbacks.Plugin.__init__(self, irc)
 
+
+        if not reactor:
+            self.irc.error('Twisted is not installed.')
+
+        # ensure we have the irc object in self
+        self.irc = irc
+
         root = Resource()
         for uri in self.registryValue('uris'):
-            root.putChild("uri", PostPage())
+            root.putChild(uri, PostPage(irc))
 
         factory = Site(root)
         reactor.listenTCP(self.registryValue('port'), factory)
-        reactor.run()
+
+#       because this is supybot and it already has twisted going
+#       we don't run the reactor
+
+#        reactor.run()
 
 Class = Hubie
 

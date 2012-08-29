@@ -44,7 +44,7 @@ Hubie = conf.registerPlugin('Hubie')
 # conf.registerGlobalValue(Hubie, 'someConfigVariableName',
 #     registry.Boolean(False, """Help for someConfigVariableName."""))
 
-conf.registerChannelValue(Hubie, 'port', registry.Integer('8880', """The port on which Hubie runs."""))
+conf.registerChannelValue(Hubie, 'port', registry.Integer(8880, """The port on which Hubie runs."""))
 conf.registerChannelValue(Hubie, 'uris', registry.SpaceSeparatedListOfStrings( ['saltstack', 'gooseproject'], """List of URI references to use in the web server. This is used by github as a callback in which to post."""))
 conf.registerChannelValue(Hubie, 'description', registry.String("I am Hubie, the github issues and events bot!. More information is available at http://github.com/herlo/supybot-hubie/", """Description of this plugin"""))
 

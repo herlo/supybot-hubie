@@ -39,7 +39,6 @@ class IssueServer():
 
         root = Resource()
         root.putChild("form", FormPage())
-        root.putChild("form", FormPage())
         factory = Site(root)
         reactor.listenTCP(8880, factory)
         reactor.run()
