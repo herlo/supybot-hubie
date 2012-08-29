@@ -38,8 +38,8 @@ import supybot.callbacks as callbacks
 from twisted.web.server import Site
 from twisted.web.resource import Resource
 from twisted.internet import reactor
-import json
 
+import json
 import cgi
 
 
@@ -62,28 +62,18 @@ class PostPage(Resource):
     def parse_post(self, request):
         input_data = cgi.escape(request.args["data"][0])
 
-        print "Path: {0}".format(request.path)
-
         data = json.loads(input_data)
 
-    #    print "Issue Info: {0}\n\n".format(data['issue'])
-    #    print "Issue Info: {0}\n\n".format(data['issue']['title'])
-    #    print "Issue URL: {0}\n\n".format(data['issue']['html_url'])
-    #    print "Action Info: {0}\n\n".format(data['action'])
-    
-    #   Format issues as below
-    #   Issue CLOSED - saltstack/salt: #1888 (Add daemonize_if to service.restart for the minion) <https://github.com/saltstack/salt/issues/1888>
+#       Format issues as below:
+#       Issue CLOSED - saltstack/salt: #1888 (Add daemonize_if to service.restart for the minion) <https://github.com/saltstack/salt/issues/1888>
 
         issue_str = 'Issue {0} - {1}: #{2} ({3}) ' \
         '<{4}>'.format(data['action'].upper(), data['repository']['full_name'], 
         data['issue']['number'], data['issue']['title'],  data['issue']['html_url'])
     
         for channel in self.irc.state.channels:
-            print "{0}=={1}".format(self.channel, channel)
             if self.channel == channel:
                 self.irc.queueMsg(ircmsgs.privmsg(channel, issue_str))
-
-        print issue_str
 
 
 class Hubie(callbacks.Plugin):
@@ -108,9 +98,6 @@ class Hubie(callbacks.Plugin):
 
         pathmaps = self.registryValue('pathmaps')
         path_dict = {pathmaps[i]: pathmaps[i+1] for i in range(0, len(pathmaps), 2)}
-
-
-        print "pathmaps: {0}".format(path_dict)
 
 
         for uri, channel in path_dict.items():
