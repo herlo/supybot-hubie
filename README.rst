@@ -35,6 +35,8 @@ get supybot-hubie up and running.
    edit the configuration file. In this configuration file, make sure the
    following values are changed as appropriate:
 
+   supybot.drivers.module: Twisted
+
    supybot.networks.freenode.ssl: True
 
    supybot.networks.freenode.servers: chat.us.freenode.net:7000
