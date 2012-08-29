@@ -100,7 +100,7 @@ class Hubie(callbacks.Plugin):
         path_dict = {}
 
         for i in range(0, len(pathmaps), 2):
-            path_dict[i] = path_dict[i+1]
+            path_dict[pathmaps[i]] = pathmaps[i+1]
 
         for uri, channel in path_dict.items():
             post_page = PostPage(irc)
