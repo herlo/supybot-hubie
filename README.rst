@@ -14,4 +14,4 @@ github.
 Dependencies
 ------------
 
-PyGithub - (http://www.dalkescientific.com/Python/PyRSS2Gen.html)
+PyGithub - (https://github.com/jacquev6/PyGithub)
