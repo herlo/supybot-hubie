@@ -48,16 +48,23 @@ class PostPage(Resource):
     def __init__(self, irc):
         self.irc = irc
 
+    def set_channel(self, channel):
+        self.channel = channel
+
     def render_GET(self, request):
         return '<html><body><form method="POST"><input name="data" type="text" /></form></body></html>'
         #return '<html><body>GET action not allowed</body></html>'
 
     def render_POST(self, request):
-        self.parse_post(cgi.escape(request.args["data"][0]))
+        self.parse_post(request)
         return "Thanks!"
 
-    def parse_post(self, input):
-        data = json.loads(input)
+    def parse_post(self, request):
+        input_data = cgi.escape(request.args["data"][0])
+
+        print "Path: {0}".format(request.path)
+
+        data = json.loads(input_data)
 
     #    print "Issue Info: {0}\n\n".format(data['issue'])
     #    print "Issue Info: {0}\n\n".format(data['issue']['title'])
@@ -72,7 +79,9 @@ class PostPage(Resource):
         data['issue']['number'], data['issue']['title'],  data['issue']['html_url'])
     
         for channel in self.irc.state.channels:
-            self.irc.queueMsg(ircmsgs.privmsg(channel, issue_str))
+            print "{0}=={1}".format(self.channel, channel)
+            if self.channel == channel:
+                self.irc.queueMsg(ircmsgs.privmsg(channel, issue_str))
 
         print issue_str
 
@@ -95,12 +104,19 @@ class Hubie(callbacks.Plugin):
         if not reactor:
             self.irc.error('Twisted is not installed.')
 
-        # ensure we have the irc object in self
-        self.irc = irc
-
         root = Resource()
-        for uri in self.registryValue('uris'):
-            root.putChild(uri, PostPage(irc))
+
+        pathmaps = self.registryValue('pathmaps')
+        path_dict = {pathmaps[i]: pathmaps[i+1] for i in range(0, len(pathmaps), 2)}
+
+
+        print "pathmaps: {0}".format(path_dict)
+
+
+        for uri, channel in path_dict.items():
+            post_page = PostPage(irc)
+            post_page.set_channel(channel)
+            root.putChild(uri, post_page)
 
         factory = Site(root)
         reactor.listenTCP(self.registryValue('port'), factory)
