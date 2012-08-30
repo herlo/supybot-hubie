@@ -60,6 +60,8 @@ class PostPage(Resource):
         return "Thanks!"
 
     def parse_post(self, request):
+        print "Client IP: {0}".format(request.getClientIP())
+#        print request.args.keys()
         input_data = cgi.escape(request.args["payload"][0])
 
         data = json.loads(input_data)
@@ -74,6 +76,8 @@ class PostPage(Resource):
         for channel in self.irc.state.channels:
             if self.channel == channel:
                 self.irc.queueMsg(ircmsgs.privmsg(channel, issue_str))
+
+#        print issue_str
 
 
 class Hubie(callbacks.Plugin):
