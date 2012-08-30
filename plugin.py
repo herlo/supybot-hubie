@@ -52,7 +52,7 @@ class PostPage(Resource):
         self.channel = channel
 
     def render_GET(self, request):
-        return '<html><body><form method="POST"><input name="data" type="text" /></form></body></html>'
+        return '<html><body><form method="POST"><input name="payload" type="text" /></form></body></html>'
         #return '<html><body>GET action not allowed</body></html>'
 
     def render_POST(self, request):
@@ -60,7 +60,7 @@ class PostPage(Resource):
         return "Thanks!"
 
     def parse_post(self, request):
-        input_data = cgi.escape(request.args["data"][0])
+        input_data = cgi.escape(request.args["payload"][0])
 
         data = json.loads(input_data)
 
