@@ -37,6 +37,7 @@ import supybot.callbacks as callbacks
 
 from twisted.web.server import Site
 from twisted.web.resource import Resource
+from twisted.web.microdom import unescape
 from twisted.internet import reactor
 
 import json
@@ -69,10 +70,14 @@ class PostPage(Resource):
 #       Format issues as below:
 #       Issue CLOSED - saltstack/salt: #1888 (Add daemonize_if to service.restart for the minion) <https://github.com/saltstack/salt/issues/1888>
 
-        issue_str = 'Issue {0} - {1}: #{2} ({3}) ' \
-        '<{4}>'.format(data['action'].upper(), data['repository']['full_name'], 
-        data['issue']['number'], data['issue']['title'],  data['issue']['html_url'])
-    
+        issue_str = unescape('Issue {0} - {1}: #{2} ({3}) <{4}>'.format(
+            data['action'].upper(),
+            data['repository']['full_name'],
+            data['issue']['number'],
+            data['issue']['title'],
+            data['issue']['html_url']
+        ))
+
         for channel in self.irc.state.channels:
             if self.channel == channel:
                 self.irc.queueMsg(ircmsgs.privmsg(channel, issue_str))
@@ -88,7 +93,7 @@ class Hubie(callbacks.Plugin):
     def __init__(self, irc):
 
         '''
-        Initialize the twisted web server with the proper 
+        Initialize the twisted web server with the proper
         ports and URI values.
         '''
 
