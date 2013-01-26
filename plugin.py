@@ -62,10 +62,11 @@ class PostPage(Resource):
 
     def parse_post(self, request):
         print "Client IP: {0}".format(request.getClientIP())
-#        print request.args.keys()
-        input_data = cgi.escape(request.args["payload"][0])
+        #print "Request Args: {0}".format(request.args)
+        input_data = cgi.escape(request.args['payload'][0])
 
         data = json.loads(input_data)
+
 
 #       Format issues as below:
 #       Issue CLOSED - saltstack/salt: #1888 (Add daemonize_if to service.restart for the minion) <https://github.com/saltstack/salt/issues/1888>
@@ -82,7 +83,7 @@ class PostPage(Resource):
             if self.channel == channel:
                 self.irc.queueMsg(ircmsgs.privmsg(channel, issue_str))
 
-#        print issue_str
+        print issue_str
 
 
 class Hubie(callbacks.Plugin):
